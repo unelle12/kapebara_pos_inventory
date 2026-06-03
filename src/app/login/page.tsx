@@ -1,4 +1,5 @@
-import { Coffee } from "lucide-react";
+import { Suspense } from "react";
+import { Coffee, Loader2 } from "lucide-react";
 
 import { Logo } from "~/components/brand/logo";
 import { LoginForm } from "./login-form";
@@ -64,7 +65,16 @@ export default function LoginPage() {
           <p className="mt-1 text-sm text-fg-muted">
             Sign in to continue to the dashboard.
           </p>
-          <LoginForm />
+          <Suspense
+            fallback={
+              <div className="mt-8 flex items-center justify-center gap-2 text-sm text-fg-muted">
+                <Loader2 className="size-4 animate-spin" />
+                Loading…
+              </div>
+            }
+          >
+            <LoginForm />
+          </Suspense>
           <DemoCredentials />
         </div>
       </section>

@@ -121,11 +121,152 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PostScalarFieldEnum = {
+exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  passwordHash: 'passwordHash',
+  role: 'role',
+  active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  provider: 'provider',
+  providerAccountId: 'providerAccountId',
+  refresh_token: 'refresh_token',
+  access_token: 'access_token',
+  expires_at: 'expires_at',
+  token_type: 'token_type',
+  scope: 'scope',
+  id_token: 'id_token',
+  session_state: 'session_state'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  sessionToken: 'sessionToken',
+  userId: 'userId',
+  expires: 'expires'
+};
+
+exports.Prisma.VerificationTokenScalarFieldEnum = {
+  identifier: 'identifier',
+  token: 'token',
+  expires: 'expires'
+};
+
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  icon: 'icon',
+  color: 'color',
+  sort: 'sort',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SupplierScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  contact: 'contact',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductScalarFieldEnum = {
+  id: 'id',
+  sku: 'sku',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  imageUrl: 'imageUrl',
+  basePrice: 'basePrice',
+  cost: 'cost',
+  lowStockThreshold: 'lowStockThreshold',
+  active: 'active',
+  trackStock: 'trackStock',
+  categoryId: 'categoryId',
+  supplierId: 'supplierId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductVariantScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  sku: 'sku',
+  price: 'price',
+  cost: 'cost',
+  stock: 'stock',
+  attributes: 'attributes',
+  sort: 'sort',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StockMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  variantId: 'variantId',
+  type: 'type',
+  qty: 'qty',
+  note: 'note',
+  userId: 'userId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SaleScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  status: 'status',
+  subtotal: 'subtotal',
+  tax: 'tax',
+  discount: 'discount',
+  total: 'total',
+  paymentMethod: 'paymentMethod',
+  amountTendered: 'amountTendered',
+  change: 'change',
+  cashierId: 'cashierId',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SaleItemScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  productId: 'productId',
+  variantId: 'variantId',
+  name: 'name',
+  sku: 'sku',
+  qty: 'qty',
+  unitPrice: 'unitPrice',
+  unitCost: 'unitCost',
+  lineTotal: 'lineTotal'
+};
+
+exports.Prisma.RefundScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  reason: 'reason',
+  amount: 'amount',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -133,14 +274,63 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+exports.UserRole = exports.$Enums.UserRole = {
+  OWNER: 'OWNER',
+  MANAGER: 'MANAGER',
+  CASHIER: 'CASHIER'
+};
+
+exports.StockMovementType = exports.$Enums.StockMovementType = {
+  SALE: 'SALE',
+  RESTOCK: 'RESTOCK',
+  ADJUST: 'ADJUST',
+  REFUND: 'REFUND'
+};
+
+exports.SaleStatus = exports.$Enums.SaleStatus = {
+  COMPLETED: 'COMPLETED',
+  REFUNDED: 'REFUNDED',
+  VOID: 'VOID'
+};
+
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CASH: 'CASH',
+  CARD: 'CARD',
+  EWALLET: 'EWALLET'
+};
 
 exports.Prisma.ModelName = {
-  Post: 'Post'
+  User: 'User',
+  Account: 'Account',
+  Session: 'Session',
+  VerificationToken: 'VerificationToken',
+  Category: 'Category',
+  Supplier: 'Supplier',
+  Product: 'Product',
+  ProductVariant: 'ProductVariant',
+  StockMovement: 'StockMovement',
+  Sale: 'Sale',
+  SaleItem: 'SaleItem',
+  Refund: 'Refund'
 };
 
 /**

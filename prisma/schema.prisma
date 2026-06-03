@@ -1,5 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Kapabara POS & Inventory — Prisma schema
+// Postgres · Auth.js v5 (Prisma adapter) · Decimal(10,2) for money
 
 generator client {
     provider = "prisma-client-js"
@@ -11,11 +11,257 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
+// ============================================================
+// Auth.js v5 — User, Account, Session, VerificationToken
+// ============================================================
+
+enum UserRole {
+    OWNER
+    MANAGER
+    CASHIER
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String
+    email         String    @unique
+    emailVerified DateTime?
+    image         String?
+    passwordHash  String?
+    role          UserRole  @default(CASHIER)
+    active        Boolean   @default(true)
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
+
+    accounts       Account[]
+    sessions       Session[]
+    sales          Sale[]
+    stockMovements StockMovement[]
+    refunds        Refund[]
+
+    @@index([role])
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+// ============================================================
+// Catalog
+// ============================================================
+
+model Category {
+    id        String   @id @default(cuid())
+    name      String   @unique
+    slug      String   @unique
+    icon      String?  // lucide icon name
+    color     String?  // tailwind color key (e.g. "caramel", "sage")
+    sort      Int      @default(0)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    products Product[]
+}
+
+model Supplier {
+    id        String   @id @default(cuid())
+    name      String
+    contact   String?
+    email     String?
+    phone     String?
+    address   String?
+    notes     String?
+    active    Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    products Product[]
+}
+
+model Product {
+    id                String   @id @default(cuid())
+    sku               String   @unique
+    name              String
+    slug              String   @unique
+    description       String?
+    imageUrl          String?
+    basePrice         Decimal  @db.Decimal(10, 2)
+    cost              Decimal  @db.Decimal(10, 2)
+    lowStockThreshold Int      @default(5)
+    active            Boolean  @default(true)
+    trackStock        Boolean  @default(true)
+    categoryId        String
+    supplierId        String?
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+
+    category       Category         @relation(fields: [categoryId], references: [id])
+    supplier       Supplier?        @relation(fields: [supplierId], references: [id])
+    variants       ProductVariant[]
+    stockMovements StockMovement[]
+    saleItems      SaleItem[]
+
     @@index([name])
+    @@index([categoryId])
+    @@index([active])
+}
+
+model ProductVariant {
+    id         String   @id @default(cuid())
+    productId  String
+    name       String   // e.g. "Medium · Iced"
+    sku        String   @unique
+    price      Decimal  @db.Decimal(10, 2)
+    cost       Decimal  @db.Decimal(10, 2)
+    stock      Int      @default(0)
+    attributes Json     @default("{}") // {size: "12oz", temp: "iced"}
+    sort       Int      @default(0)
+    active     Boolean  @default(true)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+    stockMovements StockMovement[]
+    saleItems      SaleItem[]
+
+    @@index([productId])
+}
+
+// ============================================================
+// Inventory movements
+// ============================================================
+
+enum StockMovementType {
+    SALE
+    RESTOCK
+    ADJUST
+    REFUND
+}
+
+model StockMovement {
+    id        String           @id @default(cuid())
+    productId String?
+    variantId String?
+    type      StockMovementType
+    qty       Int              // positive = inbound, negative = outbound
+    note      String?
+    userId    String
+    createdAt DateTime         @default(now())
+
+    product Product?        @relation(fields: [productId], references: [id])
+    variant ProductVariant? @relation(fields: [variantId], references: [id])
+    user    User            @relation(fields: [userId], references: [id])
+
+    @@index([productId, createdAt])
+    @@index([variantId, createdAt])
+    @@index([type])
+    @@index([createdAt])
+}
+
+// ============================================================
+// Sales
+// ============================================================
+
+enum SaleStatus {
+    COMPLETED
+    REFUNDED
+    VOID
+}
+
+enum PaymentMethod {
+    CASH
+    CARD
+    EWALLET
+}
+
+model Sale {
+    id             String        @id @default(cuid())
+    reference      String        @unique // KP-YYYYMMDD-NNNN
+    status         SaleStatus    @default(COMPLETED)
+    subtotal       Decimal       @db.Decimal(10, 2)
+    tax            Decimal       @default(0) @db.Decimal(10, 2)
+    discount       Decimal       @default(0) @db.Decimal(10, 2)
+    total          Decimal       @db.Decimal(10, 2)
+    paymentMethod  PaymentMethod
+    amountTendered Decimal?      @db.Decimal(10, 2)
+    change         Decimal?      @db.Decimal(10, 2)
+    cashierId      String
+    note           String?
+    createdAt      DateTime      @default(now())
+    updatedAt      DateTime      @updatedAt
+
+    cashier User       @relation(fields: [cashierId], references: [id])
+    items   SaleItem[]
+    refunds Refund[]
+
+    @@index([cashierId, createdAt])
+    @@index([status])
+    @@index([createdAt])
+    @@index([paymentMethod])
+}
+
+model SaleItem {
+    id        String  @id @default(cuid())
+    saleId    String
+    productId String
+    variantId String?
+    name      String   // snapshot
+    sku       String   // snapshot
+    qty       Int
+    unitPrice Decimal  @db.Decimal(10, 2)
+    unitCost  Decimal  @db.Decimal(10, 2)
+    lineTotal Decimal  @db.Decimal(10, 2)
+
+    sale    Sale            @relation(fields: [saleId], references: [id], onDelete: Cascade)
+    product Product         @relation(fields: [productId], references: [id])
+    variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+    @@index([saleId])
+    @@index([productId])
+}
+
+model Refund {
+    id        String   @id @default(cuid())
+    saleId    String
+    reason    String
+    amount    Decimal  @db.Decimal(10, 2)
+    userId    String
+    createdAt DateTime @default(now())
+
+    sale Sale @relation(fields: [saleId], references: [id])
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([saleId])
+    @@index([createdAt])
 }

@@ -93,11 +93,152 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.PostScalarFieldEnum = {
+exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  email: 'email',
+  emailVerified: 'emailVerified',
+  image: 'image',
+  passwordHash: 'passwordHash',
+  role: 'role',
+  active: 'active',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  provider: 'provider',
+  providerAccountId: 'providerAccountId',
+  refresh_token: 'refresh_token',
+  access_token: 'access_token',
+  expires_at: 'expires_at',
+  token_type: 'token_type',
+  scope: 'scope',
+  id_token: 'id_token',
+  session_state: 'session_state'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  sessionToken: 'sessionToken',
+  userId: 'userId',
+  expires: 'expires'
+};
+
+exports.Prisma.VerificationTokenScalarFieldEnum = {
+  identifier: 'identifier',
+  token: 'token',
+  expires: 'expires'
+};
+
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  icon: 'icon',
+  color: 'color',
+  sort: 'sort',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SupplierScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  contact: 'contact',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  notes: 'notes',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductScalarFieldEnum = {
+  id: 'id',
+  sku: 'sku',
+  name: 'name',
+  slug: 'slug',
+  description: 'description',
+  imageUrl: 'imageUrl',
+  basePrice: 'basePrice',
+  cost: 'cost',
+  lowStockThreshold: 'lowStockThreshold',
+  active: 'active',
+  trackStock: 'trackStock',
+  categoryId: 'categoryId',
+  supplierId: 'supplierId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ProductVariantScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  name: 'name',
+  sku: 'sku',
+  price: 'price',
+  cost: 'cost',
+  stock: 'stock',
+  attributes: 'attributes',
+  sort: 'sort',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StockMovementScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  variantId: 'variantId',
+  type: 'type',
+  qty: 'qty',
+  note: 'note',
+  userId: 'userId',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.SaleScalarFieldEnum = {
+  id: 'id',
+  reference: 'reference',
+  status: 'status',
+  subtotal: 'subtotal',
+  tax: 'tax',
+  discount: 'discount',
+  total: 'total',
+  paymentMethod: 'paymentMethod',
+  amountTendered: 'amountTendered',
+  change: 'change',
+  cashierId: 'cashierId',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SaleItemScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  productId: 'productId',
+  variantId: 'variantId',
+  name: 'name',
+  sku: 'sku',
+  qty: 'qty',
+  unitPrice: 'unitPrice',
+  unitCost: 'unitCost',
+  lineTotal: 'lineTotal'
+};
+
+exports.Prisma.RefundScalarFieldEnum = {
+  id: 'id',
+  saleId: 'saleId',
+  reason: 'reason',
+  amount: 'amount',
+  userId: 'userId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -105,14 +246,63 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+exports.UserRole = exports.$Enums.UserRole = {
+  OWNER: 'OWNER',
+  MANAGER: 'MANAGER',
+  CASHIER: 'CASHIER'
+};
+
+exports.StockMovementType = exports.$Enums.StockMovementType = {
+  SALE: 'SALE',
+  RESTOCK: 'RESTOCK',
+  ADJUST: 'ADJUST',
+  REFUND: 'REFUND'
+};
+
+exports.SaleStatus = exports.$Enums.SaleStatus = {
+  COMPLETED: 'COMPLETED',
+  REFUNDED: 'REFUNDED',
+  VOID: 'VOID'
+};
+
+exports.PaymentMethod = exports.$Enums.PaymentMethod = {
+  CASH: 'CASH',
+  CARD: 'CARD',
+  EWALLET: 'EWALLET'
+};
 
 exports.Prisma.ModelName = {
-  Post: 'Post'
+  User: 'User',
+  Account: 'Account',
+  Session: 'Session',
+  VerificationToken: 'VerificationToken',
+  Category: 'Category',
+  Supplier: 'Supplier',
+  Product: 'Product',
+  ProductVariant: 'ProductVariant',
+  StockMovement: 'StockMovement',
+  Sale: 'Sale',
+  SaleItem: 'SaleItem',
+  Refund: 'Refund'
 };
 /**
  * Create the Client
@@ -153,7 +343,6 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -162,13 +351,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  name      String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  @@index([name])\n}\n",
-  "inlineSchemaHash": "4dfee2d805d63053d5ae63a6ff65a5c68e353713bdd4147909d9158ea83d8e0f",
+  "inlineSchema": "// Kapabara POS & Inventory — Prisma schema\n// Postgres · Auth.js v5 (Prisma adapter) · Decimal(10,2) for money\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\n// ============================================================\n// Auth.js v5 — User, Account, Session, VerificationToken\n// ============================================================\n\nenum UserRole {\n  OWNER\n  MANAGER\n  CASHIER\n}\n\nmodel User {\n  id            String    @id @default(cuid())\n  name          String\n  email         String    @unique\n  emailVerified DateTime?\n  image         String?\n  passwordHash  String?\n  role          UserRole  @default(CASHIER)\n  active        Boolean   @default(true)\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  accounts       Account[]\n  sessions       Session[]\n  sales          Sale[]\n  stockMovements StockMovement[]\n  refunds        Refund[]\n\n  @@index([role])\n}\n\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String\n  type              String\n  provider          String\n  providerAccountId String\n  refresh_token     String? @db.Text\n  access_token      String? @db.Text\n  expires_at        Int?\n  token_type        String?\n  scope             String?\n  id_token          String? @db.Text\n  session_state     String?\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n\n// ============================================================\n// Catalog\n// ============================================================\n\nmodel Category {\n  id        String   @id @default(cuid())\n  name      String   @unique\n  slug      String   @unique\n  icon      String? // lucide icon name\n  color     String? // tailwind color key (e.g. \"caramel\", \"sage\")\n  sort      Int      @default(0)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  products Product[]\n}\n\nmodel Supplier {\n  id        String   @id @default(cuid())\n  name      String\n  contact   String?\n  email     String?\n  phone     String?\n  address   String?\n  notes     String?\n  active    Boolean  @default(true)\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  products Product[]\n}\n\nmodel Product {\n  id                String   @id @default(cuid())\n  sku               String   @unique\n  name              String\n  slug              String   @unique\n  description       String?\n  imageUrl          String?\n  basePrice         Decimal  @db.Decimal(10, 2)\n  cost              Decimal  @db.Decimal(10, 2)\n  lowStockThreshold Int      @default(5)\n  active            Boolean  @default(true)\n  trackStock        Boolean  @default(true)\n  categoryId        String\n  supplierId        String?\n  createdAt         DateTime @default(now())\n  updatedAt         DateTime @updatedAt\n\n  category       Category         @relation(fields: [categoryId], references: [id])\n  supplier       Supplier?        @relation(fields: [supplierId], references: [id])\n  variants       ProductVariant[]\n  stockMovements StockMovement[]\n  saleItems      SaleItem[]\n\n  @@index([name])\n  @@index([categoryId])\n  @@index([active])\n}\n\nmodel ProductVariant {\n  id         String   @id @default(cuid())\n  productId  String\n  name       String // e.g. \"Medium · Iced\"\n  sku        String   @unique\n  price      Decimal  @db.Decimal(10, 2)\n  cost       Decimal  @db.Decimal(10, 2)\n  stock      Int      @default(0)\n  attributes Json     @default(\"{}\") // {size: \"12oz\", temp: \"iced\"}\n  sort       Int      @default(0)\n  active     Boolean  @default(true)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)\n  stockMovements StockMovement[]\n  saleItems      SaleItem[]\n\n  @@index([productId])\n}\n\n// ============================================================\n// Inventory movements\n// ============================================================\n\nenum StockMovementType {\n  SALE\n  RESTOCK\n  ADJUST\n  REFUND\n}\n\nmodel StockMovement {\n  id        String            @id @default(cuid())\n  productId String?\n  variantId String?\n  type      StockMovementType\n  qty       Int // positive = inbound, negative = outbound\n  note      String?\n  userId    String\n  createdAt DateTime          @default(now())\n\n  product Product?        @relation(fields: [productId], references: [id])\n  variant ProductVariant? @relation(fields: [variantId], references: [id])\n  user    User            @relation(fields: [userId], references: [id])\n\n  @@index([productId, createdAt])\n  @@index([variantId, createdAt])\n  @@index([type])\n  @@index([createdAt])\n}\n\n// ============================================================\n// Sales\n// ============================================================\n\nenum SaleStatus {\n  COMPLETED\n  REFUNDED\n  VOID\n}\n\nenum PaymentMethod {\n  CASH\n  CARD\n  EWALLET\n}\n\nmodel Sale {\n  id             String        @id @default(cuid())\n  reference      String        @unique // KP-YYYYMMDD-NNNN\n  status         SaleStatus    @default(COMPLETED)\n  subtotal       Decimal       @db.Decimal(10, 2)\n  tax            Decimal       @default(0) @db.Decimal(10, 2)\n  discount       Decimal       @default(0) @db.Decimal(10, 2)\n  total          Decimal       @db.Decimal(10, 2)\n  paymentMethod  PaymentMethod\n  amountTendered Decimal?      @db.Decimal(10, 2)\n  change         Decimal?      @db.Decimal(10, 2)\n  cashierId      String\n  note           String?\n  createdAt      DateTime      @default(now())\n  updatedAt      DateTime      @updatedAt\n\n  cashier User       @relation(fields: [cashierId], references: [id])\n  items   SaleItem[]\n  refunds Refund[]\n\n  @@index([cashierId, createdAt])\n  @@index([status])\n  @@index([createdAt])\n  @@index([paymentMethod])\n}\n\nmodel SaleItem {\n  id        String  @id @default(cuid())\n  saleId    String\n  productId String\n  variantId String?\n  name      String // snapshot\n  sku       String // snapshot\n  qty       Int\n  unitPrice Decimal @db.Decimal(10, 2)\n  unitCost  Decimal @db.Decimal(10, 2)\n  lineTotal Decimal @db.Decimal(10, 2)\n\n  sale    Sale            @relation(fields: [saleId], references: [id], onDelete: Cascade)\n  product Product         @relation(fields: [productId], references: [id])\n  variant ProductVariant? @relation(fields: [variantId], references: [id])\n\n  @@index([saleId])\n  @@index([productId])\n}\n\nmodel Refund {\n  id        String   @id @default(cuid())\n  saleId    String\n  reason    String\n  amount    Decimal  @db.Decimal(10, 2)\n  userId    String\n  createdAt DateTime @default(now())\n\n  sale Sale @relation(fields: [saleId], references: [id])\n  user User @relation(fields: [userId], references: [id])\n\n  @@index([saleId])\n  @@index([createdAt])\n}\n",
+  "inlineSchemaHash": "0bdadecf957fab93d202180142ba44df082482d2bc6ab05644ef0e815c5ee836",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"passwordHash\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"active\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"sales\",\"kind\":\"object\",\"type\":\"Sale\",\"relationName\":\"SaleToUser\"},{\"name\":\"stockMovements\",\"kind\":\"object\",\"type\":\"StockMovement\",\"relationName\":\"StockMovementToUser\"},{\"name\":\"refunds\",\"kind\":\"object\",\"type\":\"Refund\",\"relationName\":\"RefundToUser\"}],\"dbName\":null},\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"provider\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerAccountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refresh_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"access_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires_at\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"token_type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"id_token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"session_state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"}],\"dbName\":null},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sessionToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":null},\"VerificationToken\":{\"fields\":[{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expires\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Category\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"slug\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"icon\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"color\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sort\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"CategoryToProduct\"}],\"dbName\":null},\"Supplier\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"contact\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"active\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ProductToSupplier\"}],\"dbName\":null},\"Product\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sku\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"slug\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"imageUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"basePrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"cost\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"lowStockThreshold\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"active\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"trackStock\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"categoryId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"supplierId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"category\",\"kind\":\"object\",\"type\":\"Category\",\"relationName\":\"CategoryToProduct\"},{\"name\":\"supplier\",\"kind\":\"object\",\"type\":\"Supplier\",\"relationName\":\"ProductToSupplier\"},{\"name\":\"variants\",\"kind\":\"object\",\"type\":\"ProductVariant\",\"relationName\":\"ProductToProductVariant\"},{\"name\":\"stockMovements\",\"kind\":\"object\",\"type\":\"StockMovement\",\"relationName\":\"ProductToStockMovement\"},{\"name\":\"saleItems\",\"kind\":\"object\",\"type\":\"SaleItem\",\"relationName\":\"ProductToSaleItem\"}],\"dbName\":null},\"ProductVariant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sku\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"cost\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"stock\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"attributes\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"sort\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"active\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ProductToProductVariant\"},{\"name\":\"stockMovements\",\"kind\":\"object\",\"type\":\"StockMovement\",\"relationName\":\"ProductVariantToStockMovement\"},{\"name\":\"saleItems\",\"kind\":\"object\",\"type\":\"SaleItem\",\"relationName\":\"ProductVariantToSaleItem\"}],\"dbName\":null},\"StockMovement\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"variantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"StockMovementType\"},{\"name\":\"qty\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ProductToStockMovement\"},{\"name\":\"variant\",\"kind\":\"object\",\"type\":\"ProductVariant\",\"relationName\":\"ProductVariantToStockMovement\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"StockMovementToUser\"}],\"dbName\":null},\"Sale\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reference\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"SaleStatus\"},{\"name\":\"subtotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"tax\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"discount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"total\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"paymentMethod\",\"kind\":\"enum\",\"type\":\"PaymentMethod\"},{\"name\":\"amountTendered\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"change\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"cashierId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"note\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"cashier\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SaleToUser\"},{\"name\":\"items\",\"kind\":\"object\",\"type\":\"SaleItem\",\"relationName\":\"SaleToSaleItem\"},{\"name\":\"refunds\",\"kind\":\"object\",\"type\":\"Refund\",\"relationName\":\"RefundToSale\"}],\"dbName\":null},\"SaleItem\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"saleId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"variantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sku\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"qty\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"unitPrice\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"unitCost\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"lineTotal\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"sale\",\"kind\":\"object\",\"type\":\"Sale\",\"relationName\":\"SaleToSaleItem\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ProductToSaleItem\"},{\"name\":\"variant\",\"kind\":\"object\",\"type\":\"ProductVariant\",\"relationName\":\"ProductVariantToSaleItem\"}],\"dbName\":null},\"Refund\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"saleId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Decimal\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sale\",\"kind\":\"object\",\"type\":\"Sale\",\"relationName\":\"RefundToSale\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RefundToUser\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),

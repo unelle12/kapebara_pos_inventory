@@ -52,20 +52,46 @@ In the Vercel project settings → **Environment Variables**, add the following 
 
 > **Tip:** apply the same vars to the **Preview** environment too, but with a separate `DATABASE_URL` pointing to a staging DB if you want preview deploys to be isolated. Otherwise leave Preview envs blank and the build will fail there — which is fine; the production build is what matters.
 
-## 4. Deploy
+## 4. Apply database migrations (FIRST)
+
+> **Run this step once, before your first deploy.** Schema migrations are intentionally **not** part of the Vercel build command — Vercel's build machines run in `iad1` (US East) and cannot reach databases in many other regions / behind many firewalls. Running migrations from your local machine, where you already have working DB access, avoids the build failure.
+
+```bash
+# 1. Pull the Vercel env vars to a local .env.production
+vercel env pull .env.production
+
+# 2. Run migrations against the production DB
+DATABASE_URL="$(grep DATABASE_URL .env.production | cut -d'=' -f2- | tr -d '"')" \
+  npm run db:migrate
+```
+
+You should see Prisma apply every migration in order:
+
+```
+3 migrations found in prisma/migrations
+Applying m20240101000000_init/migration.sql
+Applying m20240115000000_add_refunds/migration.sql
+Applying m20240122000000_add_indexes/migration.sql
+All migrations applied successfully.
+```
+
+Re-run this command every time you add a new migration locally (commit the new `prisma/migrations/<timestamp>_*/` files first).
+
+## 5. Deploy
 
 Click **Deploy**. Vercel will:
 
 1. Clone the repo
 2. Run `npm ci` (clean install from `package-lock.json`)
 3. Run `prisma generate` (creates the typed Prisma client at `../generated/prisma`)
-4. Run `prisma migrate deploy` (applies all pending migrations in order — your schema goes from empty → fully built)
-5. Run `next build` (compiles the Next.js app)
-6. Boot the production server in `sin1`
+4. Run `next build` (compiles the Next.js app)
+5. Boot the production server in `sin1`
 
 The first deploy takes ~2-4 minutes. Subsequent deploys (just code changes) take ~30-60 seconds because `npm ci` and the Prisma client are cached.
 
-## 5. Seed production data (optional)
+> If the build fails with `P1001: Can't reach database server`, it means migrations slipped back into the build command. Check `vercel.json` — `buildCommand` must be exactly `prisma generate && next build`. See step 4 above.
+
+## 6. Seed production data (optional)
 
 The schema is now applied, but the database is empty. To load the demo data (5 users, 15 products, 416 sales over 30 days):
 
@@ -100,9 +126,29 @@ Vercel project → **Settings** → **Domains**. Add `pos.yourdomain.com` and fo
 
 ## 8. Continuous deployment
 
-From now on, every push to your default branch triggers a new production deploy. The full pipeline is `prisma generate && prisma migrate deploy && next build`. New migrations are applied automatically — **just add them locally with `npm run db:generate` and commit the resulting files under `prisma/migrations/`**.
+From now on, every push to your default branch triggers a new production deploy. The build pipeline is `prisma generate && next build`. New migrations are **not** applied automatically — see step 4.
+
+The full pre-deploy flow for a code change that includes a schema change:
+
+```bash
+# 1. Create the migration locally
+npm run db:generate         # prompts for a name, writes prisma/migrations/<ts>_*/
+# 2. Commit the new migration files
+git add prisma/migrations
+git commit -m "add foo to bar"
+# 3. Apply to production (locally, with the production DATABASE_URL)
+vercel env pull .env.production
+DATABASE_URL="$(grep DATABASE_URL .env.production | cut -d'=' -f2- | tr -d '"')" \
+  npm run db:migrate
+# 4. Push — Vercel will deploy the new code
+git push
+```
 
 ## Troubleshooting
+
+### Build fails with `P1001: Can't reach database server`
+
+Migrations are inside the build command. Vercel's build machine runs in `iad1` (US East) and can't reach databases in many regions / behind many firewalls. Fix: confirm `vercel.json` has `buildCommand: "prisma generate && next build"` (no `prisma migrate deploy`). Run migrations separately per step 4.
 
 ### "PrismaClientInitializationError" on first request
 

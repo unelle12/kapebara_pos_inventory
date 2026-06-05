@@ -69,9 +69,9 @@ export default async function HomePage() {
 
         <section className="mt-16 grid grid-cols-1 items-center gap-12 lg:mt-24 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="animate-fade-up">
-            <span className="inline-flex items-center gap-2 rounded-pill border border-border bg-surface/70 px-3 py-1 text-xs font-medium text-fg-muted backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 rounded-pill border border-sage-300/60 bg-sage-50 px-3 py-1 text-xs font-medium text-sage-700 backdrop-blur-sm">
               <ShieldCheck className="size-3.5 text-sage-500" />
-              14 of 15 tasks shipped · users live
+              15 of 15 tasks shipped · ready for Vercel
             </span>
             <h1 className="mt-5 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance text-espresso-900 sm:text-6xl lg:text-7xl">
               A warm, fast
@@ -108,15 +108,16 @@ export default async function HomePage() {
         </section>
 
         <section className="mt-20 mb-6">
-          <div className="mb-6 flex items-end justify-between">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h2 className="font-display text-2xl text-espresso-900">
                 Build progress
               </h2>
               <p className="mt-1 text-sm text-fg-muted">
-                14 of 15 tasks complete. Next: polish + Vercel deploy (F1, F2).
+                15 of 15 tasks complete across 6 phases. Project shipped.
               </p>
             </div>
+            <BuildProgressBar />
           </div>
           <PhaseGrid />
         </section>
@@ -181,8 +182,8 @@ function PhaseGrid() {
     { id: "B", name: "App shell", count: 2, done: 2 },
     { id: "C", name: "Inventory", count: 4, done: 4 },
     { id: "D", name: "POS", count: 3, done: 3 },
-    { id: "E", name: "Reports & security", count: 2, done: 1 },
-    { id: "F", name: "Polish & deploy", count: 2, done: 0 },
+    { id: "E", name: "Reports & security", count: 2, done: 2 },
+    { id: "F", name: "Polish & deploy", count: 2, done: 2 },
   ];
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -220,6 +221,55 @@ function PhaseGrid() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function BuildProgressBar() {
+  const total = 15;
+  const done = 15;
+  const pct = Math.round((done / total) * 100);
+  return (
+    <div
+      role="status"
+      aria-label={`Build progress: ${done} of ${total} tasks complete`}
+      className="card-elevated grain w-full sm:max-w-sm"
+    >
+      <div className="flex items-baseline justify-between px-4 pt-3">
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-fg-subtle">
+          Project
+        </span>
+        <span className="font-mono text-[10px] text-fg-muted">
+          {done} / {total} · {pct}%
+        </span>
+      </div>
+      <div className="flex items-baseline gap-2 px-4 pb-3 pt-1">
+        <span className="font-display text-2xl text-espresso-900">
+          Shipped
+        </span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-sage-700">
+          v0.1
+        </span>
+      </div>
+      <div
+        aria-hidden
+        className="relative h-2 overflow-hidden rounded-b-2xl bg-cream-200"
+      >
+        <div
+          className="h-full rounded-pill bg-gradient-to-r from-sage-500 via-caramel-500 to-sage-500 transition-[width] duration-700"
+          style={{ width: `${pct}%` }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-full opacity-30"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent 0%, oklch(1 0 0 / 0.4) 50%, transparent 100%)",
+            backgroundSize: "200% 100%",
+            animation: "shimmer 2.4s linear infinite",
+          }}
+        />
+      </div>
     </div>
   );
 }

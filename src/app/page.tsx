@@ -71,7 +71,7 @@ export default async function HomePage() {
           <div className="animate-fade-up">
             <span className="inline-flex items-center gap-2 rounded-pill border border-border bg-surface/70 px-3 py-1 text-xs font-medium text-fg-muted backdrop-blur-sm">
               <ShieldCheck className="size-3.5 text-sage-500" />
-              8 of 15 tasks shipped · Inventory live
+              14 of 15 tasks shipped · users live
             </span>
             <h1 className="mt-5 font-display text-5xl font-medium leading-[1.05] tracking-tight text-balance text-espresso-900 sm:text-6xl lg:text-7xl">
               A warm, fast
@@ -82,8 +82,9 @@ export default async function HomePage() {
             </h1>
             <p className="mt-6 max-w-lg text-lg leading-relaxed text-fg-muted text-pretty">
               Sign in to a warm dashboard with live KPIs, browse the catalog,
-              adjust stock with an audit trail, and export it all to CSV. The
-              POS terminal is up next.
+              adjust stock with an audit trail, run a full point-of-sale with
+              receipts and refunds, and slice the numbers any way you want.
+              User management is up next.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link href={signedIn ? "/dashboard" : "/login"}>
@@ -113,7 +114,7 @@ export default async function HomePage() {
                 Build progress
               </h2>
               <p className="mt-1 text-sm text-fg-muted">
-                8 of 15 tasks complete. Next: suppliers CRUD + restock page (C4).
+                14 of 15 tasks complete. Next: polish + Vercel deploy (F1, F2).
               </p>
             </div>
           </div>
@@ -178,9 +179,9 @@ function PhaseGrid() {
   const phases = [
     { id: "A", name: "Foundation", count: 3, done: 3 },
     { id: "B", name: "App shell", count: 2, done: 2 },
-    { id: "C", name: "Inventory", count: 4, done: 3 },
-    { id: "D", name: "POS", count: 3, done: 0 },
-    { id: "E", name: "Reports & security", count: 2, done: 0 },
+    { id: "C", name: "Inventory", count: 4, done: 4 },
+    { id: "D", name: "POS", count: 3, done: 3 },
+    { id: "E", name: "Reports & security", count: 2, done: 1 },
     { id: "F", name: "Polish & deploy", count: 2, done: 0 },
   ];
   return (

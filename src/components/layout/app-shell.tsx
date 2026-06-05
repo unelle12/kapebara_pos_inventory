@@ -57,8 +57,11 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
         <main
+          id="main-content"
+          tabIndex={-1}
           className={cn(
             "flex-1 px-4 pb-12 pt-6 sm:px-6 sm:pt-8",
+            "animate-fade-up motion-reduce:animate-none",
           )}
         >
           <div className="mx-auto w-full max-w-7xl">{children}</div>

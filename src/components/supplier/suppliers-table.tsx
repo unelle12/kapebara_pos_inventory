@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter as useNextRouter, useSearchParams as useNextSearchParams } from "next/navigation";
 import {
   type ColumnDef,
   flexRender,
@@ -18,13 +19,12 @@ import {
   Edit3,
   Eye,
   MoreHorizontal,
-  Package,
-  Sliders,
   Trash2,
+  Truck,
 } from "lucide-react";
 
 import { api } from "~/trpc/react";
-import { Badge } from "~/components/ui/badge";
+import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
@@ -33,31 +33,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { Badge } from "~/components/ui/badge";
 import { SkeletonRow } from "~/components/ui/skeleton";
 import { TableEmptyState } from "~/components/ui/table-empty-state";
-import { StockBadge, type StockStatus } from "~/components/products/stock-badge";
-import { cn, formatCurrency } from "~/lib/utils";
-
-type ProductRow = {
+type SupplierRow = {
   id: string;
-  sku: string;
   name: string;
-  slug: string;
-  description: string | null;
-  imageUrl: string | null;
-  basePrice: number;
-  lowStockThreshold: number;
-  trackStock: boolean;
+  contact: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  notes: string | null;
   active: boolean;
+  createdAt: Date;
   updatedAt: Date;
-  category: { id: string; name: string; slug: string; color: string | null };
-  supplier: { id: string; name: string } | null;
-  totalStock: number;
-  minPrice: number;
-  maxPrice: number;
-  avgMargin: number;
-  variantCount: number;
-  stockStatus: StockStatus;
+  productCount: number;
 };
 
 function SortIcon({ dir }: { dir: false | "asc" | "desc" }) {
@@ -66,27 +56,15 @@ function SortIcon({ dir }: { dir: false | "asc" | "desc" }) {
   return <ArrowUpDown className="size-3 opacity-40" />;
 }
 
-function CategoryDot({ color }: { color: string | null }) {
-  const map: Record<string, string> = {
-    caramel: "bg-caramel-500",
-    sage: "bg-sage-500",
-    clay: "bg-clay-500",
-    espresso: "bg-espresso-700",
-  };
-  const tone = (color && map[color]) ?? "bg-fg-subtle";
-  return <span className={cn("size-2 shrink-0 rounded-full", tone)} aria-hidden />;
-}
-
-export function ProductsTable({
+export function SuppliersTable({
   initialData,
 }: {
   initialData: {
-    items: ProductRow[];
+    items: SupplierRow[];
     total: number;
     page: number;
     pageSize: number;
     pageCount: number;
-    totalActive: number;
   };
 }) {
   const router = useRouterSafe();
@@ -94,17 +72,15 @@ export function ProductsTable({
 
   const page = Number(searchParams.get("page") ?? "1");
   const sortBy = (searchParams.get("sortBy") ?? "name") as
-    | "name" | "sku" | "category" | "stock" | "margin" | "updated";
+    | "name" | "contact" | "createdAt";
   const sortDir = (searchParams.get("sortDir") ?? "asc") as "asc" | "desc";
 
   const sorting: SortingState = [{ id: sortBy, desc: sortDir === "desc" }];
 
-  const query = api.product.list.useQuery(
+  const query = api.supplier.list.useQuery(
     {
       search: searchParams.get("search") ?? undefined,
-      categoryId: searchParams.get("categoryId") ?? undefined,
-      stockStatus: (searchParams.get("stockStatus") ?? "ALL") as
-        | "ALL" | "OK" | "LOW" | "OUT" | "INACTIVE" | "TRACK_OFF",
+      active: searchParams.get("active") === "false" ? false : undefined,
       sortBy,
       sortDir,
       page,
@@ -115,127 +91,102 @@ export function ProductsTable({
 
   const data = query.data ?? initialData;
 
-  const columns = React.useMemo<ColumnDef<ProductRow>[]>(
+  const columns = React.useMemo<ColumnDef<SupplierRow>[]>(
     () => [
       {
         id: "name",
         accessorKey: "name",
-        header: () => <SortHeader label="Product" sortKey="name" current={sortBy} dir={sortDir} />,
+        header: () => <SortHeader label="Supplier" sortKey="name" current={sortBy} dir={sortDir} />,
         cell: ({ row }) => {
-          const p = row.original;
+          const s = row.original;
           return (
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-cream-100 text-espresso-700">
-                {p.imageUrl ? (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={p.imageUrl}
-                    alt={p.name}
-                    className="size-full rounded-xl object-cover"
-                  />
-                ) : (
-                  <Package className="size-4" />
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate font-medium text-fg">{p.name}</p>
-                <p className="truncate font-mono text-[11px] text-fg-subtle">{p.sku}</p>
-              </div>
+            <div className="min-w-0">
+              <p className="font-medium text-fg">{s.name}</p>
+              {s.contact && (
+                <p className="text-xs text-fg-muted">{s.contact}</p>
+              )}
             </div>
           );
         },
       },
       {
-        id: "category",
-        accessorFn: (r) => r.category.name,
-        header: () => <SortHeader label="Category" sortKey="category" current={sortBy} dir={sortDir} />,
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <CategoryDot color={row.original.category.color} />
-            <span className="text-fg-muted">{row.original.category.name}</span>
-          </div>
-        ),
+        id: "contact",
+        accessorKey: "contact",
+        header: () => <SortHeader label="Contact" sortKey="contact" current={sortBy} dir={sortDir} />,
+        cell: ({ row }) => {
+          const s = row.original;
+          return s.contact ? <span className="text-fg-muted">{s.contact}</span> : <span className="text-fg-muted">—</span>;
+        },
       },
       {
-        id: "variants",
-        accessorFn: (r) => r.variantCount,
-        header: "Variants",
+        id: "email",
+        accessorKey: "email",
+        header: () => <SortHeader label="Email" sortKey="email" current={sortBy} dir={sortDir} />,
+        cell: ({ row }) => {
+          const s = row.original;
+          return s.email ? (
+            <a href={`mailto:${s.email}`} className="text-fg-hover underline-offset-2 hover:underline">
+              {s.email}
+            </a>
+          ) : <span className="text-fg-muted">—</span>;
+        },
+      },
+      {
+        id: "phone",
+        accessorKey: "phone",
+        header: () => <SortHeader label="Phone" sortKey="phone" current={sortBy} dir={sortDir} />,
+        cell: ({ row }) => {
+          const s = row.original;
+          return s.phone ? <span className="text-fg-muted">{s.phone}</span> : <span className="text-fg-muted">—</span>;
+        },
+      },
+      {
+        id: "address",
+        accessorKey: "address",
+        header: "Address",
         enableSorting: false,
         cell: ({ row }) => {
-          const p = row.original;
-          const range =
-            p.minPrice === p.maxPrice
-              ? formatCurrency(p.minPrice)
-              : `${formatCurrency(p.minPrice)}–${formatCurrency(p.maxPrice)}`;
-          return (
-            <div>
-              <p className="text-fg">
-                {p.variantCount} {p.variantCount === 1 ? "variant" : "variants"}
-              </p>
-              <p className="font-mono text-[11px] text-fg-subtle tabular-nums">{range}</p>
-            </div>
-          );
+          const s = row.original;
+          return s.address ? (
+            <span className="text-fg-muted line-clamp-2">{s.address}</span>
+          ) : <span className="text-fg-muted">—</span>;
         },
       },
       {
-        id: "stock",
-        accessorFn: (r) => r.totalStock,
-        header: () => <SortHeader label="Stock" sortKey="stock" current={sortBy} dir={sortDir} />,
+        id: "productCount",
+        accessorKey: "productCount",
+        header: () => <SortHeader label="Products" sortKey="productCount" current={sortBy} dir={sortDir} />,
         cell: ({ row }) => {
-          const p = row.original;
-          if (!p.trackStock) {
-            return <span className="font-mono text-xs text-fg-subtle">—</span>;
-          }
+          const s = row.original;
           return (
-            <div>
-              <p className="font-mono font-medium tabular-nums text-fg">{p.totalStock}</p>
-              <p className="font-mono text-[10px] text-fg-subtle">≤ {p.lowStockThreshold}</p>
-            </div>
+            <span className="font-mono text-sm text-fg">
+              {s.productCount} {s.productCount === 1 ? "product" : "products"}
+            </span>
           );
         },
       },
       {
         id: "status",
-        accessorFn: (r) => r.stockStatus,
+        accessorKey: "active",
         header: "Status",
         enableSorting: false,
         cell: ({ row }) => {
-          const p = row.original;
-          if (!p.active) {
-            return <Badge variant="neutral" size="sm">Inactive</Badge>;
-          }
+          const s = row.original;
           return (
-            <StockBadge
-              status={p.stockStatus}
-              qty={p.trackStock ? p.totalStock : undefined}
-            />
+            <Badge
+              variant={s.active ? "sage" : "neutral"}
+              size="sm"
+            >
+              {s.active ? "Active" : "Inactive"}
+            </Badge>
           );
         },
-      },
-      {
-        id: "margin",
-        accessorFn: (r) => r.avgMargin,
-        header: () => <SortHeader label="Margin" sortKey="margin" current={sortBy} dir={sortDir} />,
-        cell: ({ row }) => (
-          <span
-            className={cn(
-              "font-mono text-sm tabular-nums",
-              row.original.avgMargin >= 50
-                ? "text-sage-700"
-                : row.original.avgMargin >= 25
-                  ? "text-fg"
-                  : "text-clay-700",
-            )}
-          >
-            {row.original.avgMargin.toFixed(1)}%
-          </span>
-        ),
       },
       {
         id: "actions",
         header: "",
         enableSorting: false,
-        cell: ({ row }) => <RowActions row={row.original} />,
+        cell: ({ row }) => <SupplierRowActions row={row.original} />,
       },
     ],
     [sortBy, sortDir],
@@ -264,7 +215,7 @@ export function ProductsTable({
       else params.set(k, v);
     });
     const qs = params.toString();
-    router.replace(qs ? `/products?${qs}` : "/products", { scroll: false });
+    router.replace(qs ? `/suppliers?${qs}` : "/suppliers", { scroll: false });
   }
 
   return (
@@ -291,19 +242,19 @@ export function ProductsTable({
           <tbody>
             {query.isFetching && data.items.length === 0 ? (
               Array.from({ length: 6 }).map((_, i) => (
-                <SkeletonRow key={i} cols={6} />
+                <SkeletonRow key={i} cols={5} />
               ))
             ) : data.items.length === 0 ? (
               <TableEmptyState
-                colSpan={7}
+                colSpan={6}
                 filtered={Boolean(searchParams.get("search"))}
-                title={searchParams.get("search") ? "No matches" : "No products yet"}
+                title={searchParams.get("search") ? "No matches" : "No suppliers yet"}
                 description={
                   searchParams.get("search")
                     ? `Nothing matches “${searchParams.get("search")}”. Try a different term or clear the filters.`
-                    : "Add your first product to start stocking the till."
+                    : "Add your first supplier to start managing inventory."
                 }
-                icon={Package}
+                icon={Truck}
                 onClear={() => updateParams({ search: null, page: null })}
               />
             ) : (
@@ -387,7 +338,7 @@ function SortHeader({
     }
     params.delete("page");
     const qs = params.toString();
-    router.replace(qs ? `/products?${qs}` : "/products", { scroll: false });
+    router.replace(qs ? `/suppliers?${qs}` : "/suppliers", { scroll: false });
   }
 
   return (
@@ -405,7 +356,7 @@ function SortHeader({
   );
 }
 
-function RowActions({ row }: { row: ProductRow }) {
+function SupplierRowActions({ row }: { row: SupplierRow }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -415,21 +366,15 @@ function RowActions({ row }: { row: ProductRow }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[12rem]">
         <DropdownMenuItem asChild>
-          <Link href={`/products/${row.id}`}>
+          <Link href={`/suppliers/${row.id}`}>
             <Eye className="size-3.5" />
             View details
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href={`/products/${row.id}/edit`}>
+          <Link href={`/suppliers/${row.id}/edit`}>
             <Edit3 className="size-3.5" />
-            Edit product
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={`/stock?variant=${row.id}`}>
-            <Sliders className="size-3.5" />
-            Adjust stock
+            Edit supplier
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -439,7 +384,7 @@ function RowActions({ row }: { row: ProductRow }) {
         >
           <Trash2 className="size-3.5" />
           Archive
-          <span className="ml-auto font-mono text-[9px] text-fg-subtle">C2</span>
+          <span className="ml-auto font-mono text-[9px] text-fg-subtle">C4</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -447,7 +392,6 @@ function RowActions({ row }: { row: ProductRow }) {
 }
 
 /* -- Hook shims (kept here to avoid a 1-line file) -- */
-import { useRouter as useNextRouter, useSearchParams as useNextSearchParams } from "next/navigation";
 
 function useRouterSafe() {
   return useNextRouter();

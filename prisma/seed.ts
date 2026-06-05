@@ -53,6 +53,7 @@ const USERS = [
   { name: "Mara Manager", email: "manager@kapabara.test", role: UserRole.MANAGER },
   { name: "Anna Barista", email: "anna@kapabara.test", role: UserRole.CASHIER },
   { name: "Ben Barista", email: "ben@kapabara.test", role: UserRole.CASHIER },
+  { name: "Diego Trainee", email: "diego@kapabara.test", role: UserRole.CASHIER, active: false },
 ] as const;
 
 const CATEGORIES = [

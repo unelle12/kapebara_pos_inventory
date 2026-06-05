@@ -1,18 +1,14 @@
-import { compare } from "bcryptjs";
-import { z } from "zod";
 import { type NextAuthConfig } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-
-import { db } from "~/server/db";
-
-const credentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
 
 /**
- * Edge-safe portion of the Auth.js config. We keep this small so the
- * middleware can use it without pulling Node-only modules like bcrypt.
+ * Edge-safe portion of the Auth.js config. This module MUST NOT import
+ * `~/server/db`, `bcryptjs`, or any Node-only module, because Next.js
+ * middleware runs in the Edge Runtime where the Prisma WASM engine
+ * cannot use Node APIs like `setImmediate`.
+ *
+ * The `Credentials` provider (which needs `db` and `bcrypt`) is added
+ * in `~/server/auth/index.ts`, which extends this config for the Node
+ * runtime (route handlers, server components, server actions).
  */
 export const authConfig = {
   pages: {
@@ -59,29 +55,5 @@ export const authConfig = {
       return true;
     },
   },
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(raw) {
-        const parsed = credentialsSchema.safeParse(raw);
-        if (!parsed.success) return null;
-        const { email, password } = parsed.data;
-        const user = await db.user.findUnique({ where: { email } });
-        if (!user?.passwordHash || !user.active) return null;
-        const ok = await compare(password, user.passwordHash);
-        if (!ok) return null;
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          role: user.role,
-        };
-      },
-    }),
-  ],
+  providers: [],
 } satisfies NextAuthConfig;

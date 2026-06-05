@@ -6,12 +6,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Package,
-  Search,
   Sliders,
 } from "lucide-react";
 
 import { api } from "~/trpc/react";
 import { Button } from "~/components/ui/button";
+import { SkeletonRow } from "~/components/ui/skeleton";
+import { TableEmptyState } from "~/components/ui/table-empty-state";
 import { StockBadge, type StockStatus } from "~/components/products/stock-badge";
 import { cn } from "~/lib/utils";
 import { AdjustStockDialog } from "~/components/stock/adjust-stock-dialog";
@@ -124,23 +125,31 @@ export function StockTable({
             </thead>
             <tbody>
               {query.isFetching && data.items.length === 0 ? (
-                Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+                Array.from({ length: 8 }).map((_, i) => (
+                  <SkeletonRow key={i} cols={6} />
+                ))
               ) : data.items.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-16 text-center">
-                    <div className="mx-auto flex max-w-sm flex-col items-center gap-3">
-                      <div className="flex size-12 items-center justify-center rounded-2xl bg-cream-100 text-espresso-700">
-                        <Search className="size-5" />
-                      </div>
-                      <p className="font-display text-lg text-espresso-900">
-                        No variants match
-                      </p>
-                      <p className="text-sm text-fg-muted">
-                        Try a different search term or clear the filters.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
+                <TableEmptyState
+                  colSpan={7}
+                  filtered={Boolean(
+                    search.get("search") ??
+                      search.get("categoryId") ??
+                      ((search.get("stockStatus") &&
+                        search.get("stockStatus") !== "ALL") ??
+                        false),
+                  )}
+                  title="No variants match"
+                  description="Try a different search term or clear the filters."
+                  icon={Package}
+                  onClear={() =>
+                    updateParams({
+                      search: null,
+                      categoryId: null,
+                      stockStatus: null,
+                      page: null,
+                    })
+                  }
+                />
               ) : (
                 data.items.map((v) => {
                   const attrs = (v.attributes ?? {}) as Record<string, string>;
@@ -314,21 +323,6 @@ export function StockTable({
         onClose={() => setAdjustTarget(null)}
       />
     </>
-  );
-}
-
-function SkeletonRow() {
-  return (
-    <tr className="border-b border-border/60">
-      {Array.from({ length: 7 }).map((_, i) => (
-        <td key={i} className="px-4 py-3">
-          <div
-            className="h-4 w-full max-w-[120px] animate-pulse rounded-md bg-cream-200"
-            style={{ width: `${50 + (i * 17) % 50}%` }}
-          />
-        </td>
-      ))}
-    </tr>
   );
 }
 

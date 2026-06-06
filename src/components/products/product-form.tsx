@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input, Textarea } from "~/components/ui/input";
 import { Badge } from "~/components/ui/badge";
+import { ProductImageUpload } from "~/components/products/product-image-upload";
 import { VariantEditor } from "~/components/products/variant-editor";
 import {
   defaultProductValues,
@@ -286,13 +287,20 @@ export function ProductForm({
             </select>
           </Field>
 
-          <Field label="Image URL" hint="Optional · https://">
-            <Input
-              type="url"
-              placeholder="https://…"
-              {...register("imageUrl")}
-            />
-          </Field>
+          <div className="md:col-span-2">
+            <Field
+              label="Image"
+              hint="Optional · PNG, JPEG, or WebP up to 5 MB"
+            >
+              <ProductImageUpload
+                value={watch("imageUrl") ?? null}
+                onChange={(url) =>
+                  setValue("imageUrl", url ?? "", { shouldDirty: true })
+                }
+                disabled={isSubmitting}
+              />
+            </Field>
+          </div>
 
           <div className="md:col-span-2">
             <Field label="Description" hint="Optional · up to 2000 chars">

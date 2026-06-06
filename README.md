@@ -57,6 +57,7 @@ Validated at build time by `src/env.js`. See `.env.example` for the full list wi
 | `DATABASE_URL`    | ✅       | Postgres URL. Add `?sslmode=require` for cloud.    |
 | `AUTH_SECRET`     | ✅       | 32+ char secret. `openssl rand -hex 32`            |
 | `AUTH_TRUST_HOST` | ✅ prod  | `true` when behind a proxy (Vercel, Netlify, …)    |
+| `BLOB_READ_WRITE_TOKEN` | dev upload | Vercel Blob — needed in dev to upload product images. Auto-injected on Vercel. |
 | `NODE_ENV`        | auto     | `production` on deploy, `development` locally      |
 
 ## Scripts

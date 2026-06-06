@@ -49,8 +49,20 @@ In the Vercel project settings → **Environment Variables**, add the following 
 | `DATABASE_URL`     | Your Postgres connection string (from step 1)        | ✅         |
 | `AUTH_SECRET`      | 32+ char random string. Generate with: `openssl rand -hex 32` | ✅         |
 | `AUTH_TRUST_HOST`  | `true`                                                | ✅         |
+| `BLOB_READ_WRITE_TOKEN` | Auto-injected when you create a Blob store (step 3.5) | ✅ for image upload |
 
 > **Tip:** apply the same vars to the **Preview** environment too, but with a separate `DATABASE_URL` pointing to a staging DB if you want preview deploys to be isolated. Otherwise leave Preview envs blank and the build will fail there — which is fine; the production build is what matters.
+
+## 3.5. Enable Vercel Blob (for product images)
+
+The product form uploads images to **Vercel Blob**, which is a separate Vercel product that needs to be attached to your project once:
+
+1. Vercel project → **Storage** tab → **Create Database** → **Blob** → Continue
+2. Name it (e.g. `kapabara-blob`), pick a region close to your runtime (`sin1` is fine), click **Create**
+3. Vercel automatically adds `BLOB_READ_WRITE_TOKEN` to the project's environment variables
+4. Verify in **Settings** → **Environment Variables** that the token is set for Production (and Preview if you want image uploads there too)
+
+This token is also what you need in your local `.env` if you want to test uploads against the dev server.
 
 ## 4. Apply database migrations (FIRST)
 

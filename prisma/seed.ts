@@ -110,6 +110,7 @@ type ProductSeed = {
   categorySlug: string;
   supplier: string;
   lowStockThreshold: number;
+  imageUrl?: string;
   variants: VariantSeed[];
 };
 
@@ -124,6 +125,7 @@ const PRODUCTS: ProductSeed[] = [
     categorySlug: "espresso-bar",
     supplier: "Mountain Bean Co.",
     lowStockThreshold: 25,
+    imageUrl: "https://picsum.photos/seed/ESP-LATTE/800/800",
     variants: [
       { name: "8oz · Hot", skuSuffix: "8H", price: 145, cost: 42, stock: 320, attributes: { size: "8oz", temp: "hot" } },
       { name: "12oz · Hot", skuSuffix: "12H", price: 165, cost: 48, stock: 380, attributes: { size: "12oz", temp: "hot" } },
@@ -140,6 +142,7 @@ const PRODUCTS: ProductSeed[] = [
     categorySlug: "espresso-bar",
     supplier: "Mountain Bean Co.",
     lowStockThreshold: 20,
+    imageUrl: "https://picsum.photos/seed/ESP-CAP/800/800",
     variants: [
       { name: "8oz · Hot", skuSuffix: "8H", price: 130, cost: 36, stock: 280, attributes: { size: "8oz", temp: "hot" } },
       { name: "12oz · Hot", skuSuffix: "12H", price: 145, cost: 40, stock: 340, attributes: { size: "12oz", temp: "hot" } },
@@ -224,6 +227,7 @@ const PRODUCTS: ProductSeed[] = [
     categorySlug: "cold-drinks",
     supplier: "Highland Dairy Cooperative",
     lowStockThreshold: 15,
+    imageUrl: "https://picsum.photos/seed/CLD-MATCHA/800/800",
     variants: [
       { name: "12oz · Iced", skuSuffix: "12I", price: 195, cost: 62, stock: 160, attributes: { size: "12oz", temp: "iced" } },
       { name: "16oz · Iced", skuSuffix: "16I", price: 215, cost: 68, stock: 140, attributes: { size: "16oz", temp: "iced" } },
@@ -253,6 +257,7 @@ const PRODUCTS: ProductSeed[] = [
     categorySlug: "pastries",
     supplier: "Pastry Kitchen",
     lowStockThreshold: 15,
+    imageUrl: "https://picsum.photos/seed/PST-CROIS/800/800",
     variants: [
       { name: "Plain", skuSuffix: "PLN", price: 95, cost: 28, stock: 80, attributes: { type: "plain" } },
       { name: "Almond", skuSuffix: "ALM", price: 115, cost: 36, stock: 48, attributes: { type: "almond" } },
@@ -268,6 +273,7 @@ const PRODUCTS: ProductSeed[] = [
     categorySlug: "pastries",
     supplier: "Pastry Kitchen",
     lowStockThreshold: 10,
+    imageUrl: "https://picsum.photos/seed/PST-BANANA/800/800",
     variants: [
       { name: "Slice", skuSuffix: "SLC", price: 85, cost: 22, stock: 3, attributes: { type: "slice" } },
     ],
@@ -311,6 +317,7 @@ const PRODUCTS: ProductSeed[] = [
     categorySlug: "merch",
     supplier: "Pastry Kitchen",
     lowStockThreshold: 4,
+    imageUrl: "https://picsum.photos/seed/MCH-TUMBLER/800/800",
     variants: [
       { name: "12oz · Caramel", skuSuffix: "12C", price: 750, cost: 280, stock: 22, attributes: { size: "12oz", color: "caramel" } },
       { name: "16oz · Caramel", skuSuffix: "16C", price: 850, cost: 320, stock: 18, attributes: { size: "16oz", color: "caramel" } },
@@ -406,6 +413,7 @@ async function main() {
         lowStockThreshold: p.lowStockThreshold,
         categoryId: cat.id,
         supplierId: sup.id,
+        ...(p.imageUrl ? { imageUrl: p.imageUrl } : {}),
       },
     });
 

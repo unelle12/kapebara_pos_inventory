@@ -106,13 +106,13 @@ export function POSProductGrid({
                 "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none",
               )}
             >
-              <div className="flex h-20 items-center justify-center rounded-xl bg-cream-100 text-espresso-600">
+              <div className="flex h-20 items-center justify-center rounded-xl bg-cream-50 text-espresso-600">
                 {p.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={p.imageUrl}
                     alt={p.name}
-                    className="size-full rounded-xl object-cover"
+                    className="size-full rounded-xl object-contain"
                   />
                 ) : (
                   <Coffee className="size-8" />

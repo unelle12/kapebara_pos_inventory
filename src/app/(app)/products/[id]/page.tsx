@@ -7,6 +7,7 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { StockBadge, type StockStatus } from "~/components/products/stock-badge";
 import { ProductActiveToggle } from "~/components/products/product-active-toggle";
+import { ProductLightbox } from "~/components/products/product-lightbox";
 import { formatCurrency } from "~/lib/utils";
 import { api } from "~/trpc/server";
 
@@ -60,14 +61,19 @@ export default async function ProductDetailPage({
       <section className="card p-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
-            <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-cream-100 text-espresso-700">
+            <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-cream-50 text-espresso-700">
               {product.imageUrl ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
+                <ProductLightbox
                   src={product.imageUrl}
                   alt={product.name}
-                  className="size-full rounded-2xl object-cover"
-                />
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className="size-full rounded-2xl object-contain"
+                  />
+                </ProductLightbox>
               ) : (
                 <Package className="size-9" />
               )}

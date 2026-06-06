@@ -125,13 +125,13 @@ export function ProductsTable({
           const p = row.original;
           return (
             <div className="flex items-center gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-cream-100 text-espresso-700">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-cream-50 text-espresso-700">
                 {p.imageUrl ? (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
                     src={p.imageUrl}
                     alt={p.name}
-                    className="size-full rounded-xl object-cover"
+                    className="size-full rounded-xl object-contain"
                   />
                 ) : (
                   <Package className="size-4" />

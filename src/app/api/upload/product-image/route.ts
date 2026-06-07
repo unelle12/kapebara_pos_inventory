@@ -14,6 +14,14 @@ const MAX_DIMENSION = 800;
 const WEBP_QUALITY = 85;
 
 export async function POST(req: NextRequest) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    const isProd = process.env.NODE_ENV === "production";
+    const error = isProd
+      ? "Vercel Blob is not configured on this deployment. Set BLOB_READ_WRITE_TOKEN in your Vercel project environment variables (Storage → Create Database → Blob) and redeploy. See DEPLOY.md step 3.5."
+      : "Vercel Blob is not configured. Set BLOB_READ_WRITE_TOKEN in .env and restart the dev server. See DEPLOY.md step 3.5.";
+    return NextResponse.json({ error }, { status: 503 });
+  }
+
   await requireRole("MANAGER");
 
   let formData: FormData;
@@ -70,16 +78,6 @@ export async function POST(req: NextRequest) {
             : "Could not process image",
       },
       { status: 400 },
-    );
-  }
-
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      {
-        error:
-          "Vercel Blob is not configured. Set BLOB_READ_WRITE_TOKEN and restart the dev server. See DEPLOY.md step 3.5.",
-      },
-      { status: 500 },
     );
   }
 

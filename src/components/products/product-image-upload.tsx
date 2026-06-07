@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  AlertCircle,
   Image as ImageIcon,
   Loader2,
   Package,
@@ -32,20 +33,15 @@ export function ProductImageUpload({
   const [error, setError] = React.useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = React.useState<string | null>(null);
   const [dragging, setDragging] = React.useState(false);
-  const [meta, setMeta] = React.useState<{ size: number; name: string } | null>(
-    null,
-  );
 
   // Sync status with incoming value (e.g., when the form resets).
   React.useEffect(() => {
     if (value) {
       setStatus("done");
       setError(null);
-      setMeta(null);
     } else {
       setStatus("idle");
       setError(null);
-      setMeta(null);
     }
   }, [value]);
 
@@ -76,7 +72,6 @@ export function ProductImageUpload({
     const local = URL.createObjectURL(file);
     setPreviewUrl(local);
     setStatus("uploading");
-    setMeta({ size: file.size, name: file.name });
 
     try {
       const fd = new FormData();
@@ -91,16 +86,22 @@ export function ProductImageUpload({
       };
       if (!res.ok || !json.url) {
         const msg = json.error ?? `Upload failed (${res.status})`;
+        URL.revokeObjectURL(local);
+        setPreviewUrl(null);
         setError(msg);
         setStatus("error");
         toast.error(msg);
         return;
       }
-      onChange(json.url);
+      URL.revokeObjectURL(local);
+      setPreviewUrl(null);
       setStatus("done");
+      onChange(json.url);
       toast.success("Image uploaded");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";
+      URL.revokeObjectURL(local);
+      setPreviewUrl(null);
       setError(msg);
       setStatus("error");
       toast.error(msg);
@@ -135,7 +136,6 @@ export function ProductImageUpload({
   function clear() {
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl(null);
-    setMeta(null);
     setError(null);
     setStatus("idle");
     onChange(null);
@@ -165,9 +165,11 @@ export function ProductImageUpload({
         }
         className={cn(
           "group relative flex min-h-[160px] cursor-pointer items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed bg-cream-50/40 transition-all",
-          dragging
-            ? "border-caramel-500 bg-caramel-50 ring-4 ring-caramel-200"
-            : "border-border hover:border-caramel-400 hover:bg-cream-50",
+          status === "error"
+            ? "border-clay-500 bg-clay-50/40"
+            : dragging
+              ? "border-caramel-500 bg-caramel-50 ring-4 ring-caramel-200"
+              : "border-border hover:border-caramel-400 hover:bg-cream-50",
           disabled && "pointer-events-none opacity-60",
         )}
       >
@@ -223,12 +225,15 @@ export function ProductImageUpload({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 text-xs">
-        {displayUrl ? (
+        {status === "error" ? (
+          <span className="inline-flex items-center gap-1.5 rounded-pill border border-clay-300 bg-clay-50 px-2.5 py-1 font-medium text-clay-700">
+            <AlertCircle className="size-3" />
+            {error ?? "Upload failed"}
+          </span>
+        ) : value ? (
           <span className="inline-flex items-center gap-1.5 rounded-pill border border-sage-200 bg-sage-50 px-2.5 py-1 font-medium text-sage-700">
             <ImageIcon className="size-3" />
-            {meta
-              ? `${(meta.size / 1024).toFixed(0)} KB · ${meta.name}`
-              : "Image attached"}
+            Image attached
           </span>
         ) : (
           <span className="inline-flex items-center gap-1.5 rounded-pill border border-border bg-cream-50 px-2.5 py-1 font-medium text-fg-muted">
@@ -236,26 +241,18 @@ export function ProductImageUpload({
             No image
           </span>
         )}
-        {displayUrl && (
+        {value && status !== "uploading" && (
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={clear}
-            disabled={disabled ?? status === "uploading"}
+            disabled={disabled}
             className="text-red-700 hover:bg-red-50 hover:text-red-700"
           >
             <Trash2 className="size-3.5" />
             Remove
           </Button>
-        )}
-        {error && (
-          <span
-            role="alert"
-            className="font-mono text-[11px] text-clay-700"
-          >
-            {error}
-          </span>
         )}
       </div>
     </div>

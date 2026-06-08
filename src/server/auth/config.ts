@@ -47,9 +47,14 @@ export const authConfig = {
         path.startsWith("/reports") ||
         path.startsWith("/users") ||
         path.startsWith("/settings");
-      const isOnLogin = path === "/login";
+      const isPublicAuth =
+        path === "/login" ||
+        path.startsWith("/login/") ||
+        path === "/register" ||
+        path.startsWith("/register/") ||
+        path.startsWith("/api/trpc/auth.");
       if (isOnApp && !isLoggedIn) return false; // → /login
-      if (isOnLogin && isLoggedIn) {
+      if (isLoggedIn && (isPublicAuth || path === "/")) {
         return Response.redirect(new URL("/dashboard", request.nextUrl));
       }
       return true;

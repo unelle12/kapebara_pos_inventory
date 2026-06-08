@@ -2,16 +2,15 @@ import { Coffee } from "lucide-react";
 import Link from "next/link";
 
 import { Logo } from "~/components/brand/logo";
-import { LoginRoleSelectorWrapper } from "./role-selector-wrapper";
+import { RegisterRoleSelectorWrapper } from "./role-selector-wrapper";
 
 export const metadata = {
-  title: "Sign in · kapabara",
+  title: "Register · kapabara",
 };
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <main className="grain relative grid min-h-dvh lg:grid-cols-[1.05fr_1fr]">
-      {/* Left — visual side */}
       <aside className="relative hidden overflow-hidden bg-espresso-900 text-cream-50 lg:block">
         <div
           aria-hidden
@@ -35,7 +34,7 @@ export default function LoginPage() {
           <div className="max-w-md">
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-cream-300">
               <Coffee className="mr-2 inline-block size-3 align-[-2px]" />
-              Open the till
+              Join the team
             </p>
             <h1 className="mt-4 font-display text-5xl font-medium leading-[1.05] text-balance text-cream-50">
               Warm mornings.
@@ -43,8 +42,7 @@ export default function LoginPage() {
               <em className="not-italic text-caramel-300">Calm checkouts.</em>
             </h1>
             <p className="mt-5 text-pretty text-base leading-relaxed text-cream-200">
-              Sign in to ring up orders, watch the espresso machine do its
-              thing, and keep the shelves stocked.
+              Create your account to start working with kapabara.
             </p>
           </div>
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-cream-400">
@@ -53,23 +51,22 @@ export default function LoginPage() {
         </div>
       </aside>
 
-      {/* Right — form side */}
       <section className="flex items-center justify-center px-6 py-12 sm:px-10">
         <div className="w-full max-w-sm">
           <div className="mb-10 flex items-center justify-between lg:hidden">
             <Logo size="sm" />
           </div>
           <h2 className="font-display text-3xl text-espresso-900 text-center">
-            Welcome back
+            Create an account
           </h2>
           <p className="mt-1 text-sm text-fg-muted text-center">
             Choose your role to continue
           </p>
-          <LoginRoleSelectorWrapper />
+          <RegisterRoleSelectorWrapper />
           <p className="mt-6 text-center text-xs text-fg-muted">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-caramel-600 hover:underline">
-              Register
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-caramel-600 hover:underline">
+              Sign in
             </Link>
           </p>
         </div>

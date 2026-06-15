@@ -4,6 +4,11 @@ import { z } from "zod";
 import { db } from "~/server/db";
 import { auth } from "~/server/auth";
 import { hasRole } from "~/lib/permissions";
+import {
+  searchLimiter,
+  isRateLimited,
+  getClientIp,
+} from "~/lib/rate-limit";
 
 const querySchema = z.object({
   search: z.string().trim().max(80).optional(),
@@ -19,6 +24,23 @@ const querySchema = z.object({
  * Manager+ only.
  */
 export async function GET(req: NextRequest) {
+  // Apply rate limiting
+  const clientIp = getClientIp(req);
+  const rateLimitKey = `search:${clientIp}`;
+
+  if (
+    isRateLimited(
+      rateLimitKey,
+      searchLimiter.maxRequests,
+      searchLimiter.windowMs,
+    )
+  ) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

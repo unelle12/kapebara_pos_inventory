@@ -4,6 +4,11 @@ import sharp from "sharp";
 import { randomBytes } from "node:crypto";
 
 import { requireRole } from "~/lib/auth-helpers";
+import {
+  uploadLimiter,
+  isRateLimited,
+  getClientIp,
+} from "~/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +19,23 @@ const MAX_DIMENSION = 800;
 const WEBP_QUALITY = 85;
 
 export async function POST(req: NextRequest) {
+  // Apply rate limiting
+  const clientIp = getClientIp(req);
+  const rateLimitKey = `upload:${clientIp}`;
+
+  if (
+    isRateLimited(
+      rateLimitKey,
+      uploadLimiter.maxRequests,
+      uploadLimiter.windowMs,
+    )
+  ) {
+    return NextResponse.json(
+      { error: "Too many upload requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     const isProd = process.env.NODE_ENV === "production";
     const error = isProd

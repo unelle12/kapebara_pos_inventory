@@ -4,6 +4,12 @@ import { type NextRequest } from "next/server";
 import { env } from "~/env";
 import { appRouter } from "~/server/api/root";
 import { createTRPCContext } from "~/server/api/trpc";
+import {
+  apiLimiter,
+  isRateLimited,
+  getRateLimitHeaders,
+  getClientIp,
+} from "~/lib/rate-limit";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -15,8 +21,26 @@ const createContext = async (req: NextRequest) => {
   });
 };
 
-const handler = (req: NextRequest) =>
-  fetchRequestHandler({
+const handler = async (req: NextRequest) => {
+  // Apply rate limiting
+  const clientIp = getClientIp(req);
+  const rateLimitKey = `trpc:${clientIp}`;
+
+  if (isRateLimited(rateLimitKey, apiLimiter.maxRequests, apiLimiter.windowMs)) {
+    return new Response(JSON.stringify({ error: "Too many requests" }), {
+      status: 429,
+      headers: {
+        "Content-Type": "application/json",
+        ...getRateLimitHeaders(
+          rateLimitKey,
+          apiLimiter.maxRequests,
+          apiLimiter.windowMs,
+        ),
+      },
+    });
+  }
+
+  return fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
@@ -30,5 +54,6 @@ const handler = (req: NextRequest) =>
           }
         : undefined,
   });
+};
 
 export { handler as GET, handler as POST };
